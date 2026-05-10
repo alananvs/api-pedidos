@@ -25,70 +25,53 @@ npm start
 
 ---
 
-## Exemplos de uso
+## Exemplo de uso
 
-### Criar um modelo
-
-```http
-POST /api/modelos
-Content-Type: application/json
-
-{
-  "nome": "Checklist de Abertura de Empresa",
-  "descricao": "Processo administrativo padrão",
-  "itens": [
-    { "label": "Nome da empresa", "tipo": "TEXTO", "obrigatorio": true },
-    { "label": "Data de abertura", "tipo": "DATA", "obrigatorio": true },
-    { "label": "Tipo de empresa", "tipo": "SELECAO", "obrigatorio": true, "opcoes": ["MEI", "LTDA", "SA"] }
+### Criar pedido
+```bash
+curl --location 'http://localhost:3000/order' \
+--header 'Content-Type: application/json' \
+--data '{
+  "numeroPedido": "v10089015vdb-01",
+  "valorTotal": 10000,
+  "dataCriacao": "2023-07-19T12:24:11.5299601+00:00",
+  "items": [
+    {
+      "idItem": "2434",
+      "quantidadeItem": 1,
+      "valorItem": 1000
+    }
   ]
-}
+}'
 ```
 
-Resposta `201 Created`: modelo criado com `status: RASCUNHO` e `versao: 0`.
-
-### Publicar um modelo
-
-```http
-POST /api/modelos/{id}/publicar
+### Obter pedido
+```bash
+curl http://localhost:3000/order/v10089015vdb-01
 ```
 
-Resposta `200 OK`: status muda para `PUBLICADO` e versão incrementa para `1`.
-
-### Erro de validação ao publicar
-
-Retorna `422 Unprocessable Entity`:
-```json
-{
-  "status": 422,
-  "erro": "Validação falhou ao publicar modelo",
-  "detalhes": [
-    "Item #1 (tipo TEXTO): label não pode ser vazio",
-    "Item #2 (tipo SELECAO): deve ter ao menos 2 opcoes distintas"
-  ],
-  "timestamp": "2025-04-15T14:30:00"
-}
+### Listar todos
+```bash
+curl http://localhost:3000/order/list
 ```
 
-### Tentar editar modelo publicado
-
-Retorna `409 Conflict` — só modelos em RASCUNHO podem ser editados ou deletados.
-
-### Listar com filtro
-
-```http
-GET /api/modelos?status=PUBLICADO&page=0&size=20
+### Atualizar pedido
+```bash
+curl -X PUT 'http://localhost:3000/order/v10089015vdb-01' \
+--header 'Content-Type: application/json' \
+--data '{
+  "valorTotal": 5000,
+  "dataCriacao": "2024-01-01T00:00:00.000Z",
+  "items": [{ "idItem": "99", "quantidadeItem": 2, "valorItem": 2500 }]
+}'
 ```
 
-### Clonar um modelo
-
-```http
-POST /api/modelos/{id}/clonar
+### Deletar pedido
+```bash
+curl -X DELETE http://localhost:3000/order/v10089015vdb-01
 ```
-
-Cria novo RASCUNHO com nome sufixado por `(cópia)` e versão `0`.
 
 ---
-
 ## Estrutura do projeto
 
 ```
